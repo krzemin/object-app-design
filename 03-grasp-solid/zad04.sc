@@ -28,12 +28,12 @@ object Bad {
   def calculateArea(rect: Rectangle) =
     rect.getWidth * rect.getHeight
 }
-val (w, h) = (4, 5)
 
-val rect: Bad.Rectangle = new Bad.Square()
-rect.setWidth(w)
-rect.setHeight(h)
-println(s"prostokat o wymiarach $w na $h ma pole ${Bad.calculateArea(rect)}")
+val (w, h) = (4, 5)
+val rect1: Bad.Rectangle = new Bad.Square()
+rect1.setWidth(w)
+rect1.setHeight(h)
+println(s"prostokat o wymiarach $w na $h ma pole ${Bad.calculateArea(rect1)}")
 
 
 /*
@@ -51,6 +51,27 @@ Inne rozwiązanie polega na uczynieniu klasy Rectangle niemutowalną, wówczas
 bez problemu Square może po niej dziedziczyć.
  */
 
+object Good {
+  class Rectangle(val width: Int, val height: Int)
+
+  class Square(side: Int) extends Rectangle(width = side, height = side)
+
+  def calculateArea(rect: Rectangle) =
+    rect.width * rect.height
+}
+
+
+val side = 5
+val rect2: Good.Rectangle = new Good.Square(side)
+val rect3: Good.Rectangle = new Good.Rectangle(w, h)
+
+println(s"prostokat o wymiarach ${rect2.width} na ${rect2.height} ma pole ${Good.calculateArea(rect2)}")
+println(s"prostokat o wymiarach ${rect3.width} na ${rect3.height} ma pole ${Good.calculateArea(rect3)}")
+
+/*
+Ponieważ klasy Good nie są mutowalne, to interfejs zabrania nam modyfikowania
+tylko jednej współrzędnej prostokąta w istniejącym obiekcie.
+ */
 
 
 
