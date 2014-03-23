@@ -4,7 +4,6 @@ import org.joda.time.Duration
 
 class SingletonsSpec extends Specification {
 
-  
   "SingleInstanceSingleton" should {
     "create an instance" in {
       val singleton = new SingleInstanceSingleton(Some("abc"))
