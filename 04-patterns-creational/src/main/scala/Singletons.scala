@@ -1,3 +1,5 @@
+import org.joda.time.{Duration, DateTime}
+
 object Singletons {
 
   trait Singleton[T] {
@@ -18,7 +20,6 @@ object Singletons {
     private var instances = Map.empty[Long, T]
     def get: T = {
       val threadId = Thread.currentThread().getId
-      println(s"threadID: $threadId")
       instances.get(threadId) match {
         case Some(instance) => instance
         case None =>
@@ -27,6 +28,22 @@ object Singletons {
           inst
       }
     }
+  }
+
+  class TimeWindowedInstanceSingleton[T](create: => T, windowSize: Duration)
+    extends Singleton[T] {
+
+    private var lastCreate: DateTime = _
+    private var instance: T = _
+
+    def get: T = {
+      if(instance == null || lastCreate.plus(windowSize).isBeforeNow) {
+        instance = create
+        lastCreate = DateTime.now
+      }
+      instance
+    }
+
   }
 
 }

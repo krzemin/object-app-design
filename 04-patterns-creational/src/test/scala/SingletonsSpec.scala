@@ -1,5 +1,6 @@
 import org.specs2.mutable._
 import Singletons._
+import org.joda.time.Duration
 
 class SingletonsSpec extends Specification {
 
@@ -49,4 +50,25 @@ class SingletonsSpec extends Specification {
     }
   }
 
+  "TimeWindowedInstanceSingleton" should {
+    "create an instance" in {
+      val singleton = new TimeWindowedInstanceSingleton(Some("abc"), new Duration(5000))
+      singleton.get must not beNull
+    }
+
+    "create an unique instance" in {
+      val singleton = new TimeWindowedInstanceSingleton(Some("abc"), new Duration(5000))
+      val obj1 = singleton.get
+      val obj2 = singleton.get
+      (obj1 eq obj2) must beTrue
+    }
+
+    "create separate instances in different time windows" in {
+      val singleton = new TimeWindowedInstanceSingleton(Some("abc"), new Duration(5000))
+      val obj1 = singleton.get
+      Thread.sleep(5000)
+      val obj2 = singleton.get
+      (obj1 eq obj2) must beFalse
+    }
+  }
 }
