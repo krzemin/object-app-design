@@ -18,6 +18,7 @@ badReportPrinter.formatDocument()
 badReportPrinter.printReport()
 
 
+
 /*
 Problem z tą implementacją jest taki, że ReportPrinter
 ma 3 odpowiedzialności: pobieranie danych, formatowanie
@@ -62,6 +63,7 @@ val goodReportPrinter = new Good.StdOutReportPrinter
 val data = goodDataProvider.getData
 val report = goodReportFormatter.format(data)
 goodReportPrinter.print(report)
+
 
 
 
