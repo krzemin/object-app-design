@@ -7,7 +7,7 @@ class GenericFactory {
                    params: Any*): AnyRef = {
     if(isSingleton) {
       instances.get((typeName, params)) match {
-        case Some(inst) => inst.asInstanceOf[AnyRef]
+        case Some(inst) => inst
         case None =>
           val inst = instantiate(typeName, params: _*)
           instances += (typeName, params) -> inst
