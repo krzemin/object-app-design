@@ -30,4 +30,18 @@ class OpenFactorySpec extends Specification {
     }
   }
 
+  "RectangleWorker" should {
+    val sw = new RectangleWorker
+    "accept rectangles with two Int parameters" in {
+      sw.accept("Rectangle", 5, 8) must beTrue
+      sw.accept("Rectangle") must beFalse
+      sw.accept("Rectangle", 5) must beFalse
+      sw.accept("Rectangle", 5, 6, 7) must beFalse
+      sw.accept("SomeShape", 5, 1) must beFalse
+    }
+    "create a rectangle" in {
+      sw.create(6, 2) must beAnInstanceOf[Rectangle]
+    }
+  }
+
 }
