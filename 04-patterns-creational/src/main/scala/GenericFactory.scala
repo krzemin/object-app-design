@@ -4,18 +4,25 @@ class GenericFactory {
 
   def createObject(typeName: String,
                    isSingleton: Boolean,
-                   params: Any*) {
+                   params: Any*): AnyRef = {
     if(isSingleton) {
-      instances((typeName, params)) match {
-        case Some(inst) => inst
-        case None => ???
+      instances.get((typeName, params)) match {
+        case Some(inst) => inst.asInstanceOf[AnyRef]
+        case None =>
+          val inst = instantiate(typeName, params: _*)
+          instances += (typeName, params) -> inst
+          inst
       }
     } else {
-      println("n = " + Class.forName(typeName).getConstructors.size)
-      println("params = " + params.size)
-      println("cons = " + Class.forName(typeName).getConstructors.head.getParameterTypes.size)
-      Class.forName(typeName).getConstructors.head.newInstance(params.asInstanceOf[Seq[AnyRef]]).asInstanceOf[AnyRef]
+      instantiate(typeName, params: _*)
     }
+  }
+
+  private def instantiate(typeName: String, params: Any*): AnyRef = {
+    Class.forName(typeName)
+      .getConstructors.head
+      .newInstance(params.asInstanceOf[Seq[AnyRef]]: _*)
+      .asInstanceOf[AnyRef]
   }
 
 }
