@@ -1,4 +1,3 @@
-
 import java.io._
 
 object Decorator extends App {
