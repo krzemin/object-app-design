@@ -12,6 +12,12 @@ object Interpreter {
   object False extends Expr {
     def eval(ctx: Context) = false
   }
+  class Neg(e: Expr) extends Expr {
+    def eval(ctx: Context) = !e.eval(ctx)
+  }
+  class Var(x: String) extends Expr {
+    def eval(ctx: Context) = ctx.getOrElse(x, throw new RuntimeException)
+  }
 
 
 }
