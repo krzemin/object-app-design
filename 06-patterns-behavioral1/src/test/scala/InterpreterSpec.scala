@@ -19,6 +19,18 @@ class InterpreterSpec extends Specification {
       new Var("x").eval(ctx1) must beTrue
       new Var("y").eval(ctx1) must throwA[RuntimeException]
     }
+    "evaluate conjunction" in {
+      new And(True, True).eval(ctx) must beTrue
+      new And(True, False).eval(ctx) must beFalse
+      new And(False, True).eval(ctx) must beFalse
+      new And(False, new Var("y")).eval(ctx) must beFalse
+    }
+    "evaluate disjunction" in {
+      new Or(True, True).eval(ctx) must beTrue
+      new Or(False, False).eval(ctx) must beFalse
+      new Or(False, True).eval(ctx) must beFalse
+      new Or(True, new Var("y")).eval(ctx) must beTrue
+    }
   }
 
 }

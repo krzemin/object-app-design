@@ -18,6 +18,11 @@ object Interpreter {
   class Var(x: String) extends Expr {
     def eval(ctx: Context) = ctx.getOrElse(x, throw new RuntimeException)
   }
-
+  class And(e1: Expr, e2: Expr) extends Expr {
+    def eval(ctx: Context) = e1.eval(ctx) && e2.eval(ctx)
+  }
+  class Or(e1: Expr, e2: Expr) extends Expr {
+    def eval(ctx: Context) = e1.eval(ctx) || e2.eval(ctx)
+  }
 
 }
