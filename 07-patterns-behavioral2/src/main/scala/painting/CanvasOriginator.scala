@@ -43,8 +43,22 @@ trait CanvasOriginator extends PaintMemento.Originator {
 
   object Events {
 
-    def circle(point: java.awt.Point) {
-      val shape: Circle = new Circle(point.x, point.y, 50)
+    def circle(pointFrom: java.awt.Point, pointTo: java.awt.Point) {
+      val shape = new Circle(pointFrom.x, pointFrom.y,
+        pointTo.distance(pointFrom).asInstanceOf[Int])
+      newState(new PaintMemento.AddShape(shape))
+    }
+
+    def square(pointFrom: java.awt.Point, pointTo: java.awt.Point) {
+      val shape = new Square(pointFrom.x, pointFrom.y,
+        pointTo.distance(pointFrom).asInstanceOf[Int])
+      newState(new PaintMemento.AddShape(shape))
+    }
+
+    def rectangle(pointFrom: java.awt.Point, pointTo: java.awt.Point) {
+      val (miX, miY) = (math.min(pointFrom.x, pointTo.x), math.min(pointFrom.y, pointTo.y))
+      val (maX, maY) = (math.max(pointFrom.x, pointTo.x), math.max(pointFrom.y, pointTo.y))
+      val shape = new Rectangle(miX, miY, maX - miX, maY - miY)
       newState(new PaintMemento.AddShape(shape))
     }
 
