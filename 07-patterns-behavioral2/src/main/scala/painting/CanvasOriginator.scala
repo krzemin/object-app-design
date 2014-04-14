@@ -7,11 +7,7 @@ trait CanvasOriginator extends PaintMemento.Originator {
   self : { def newState(m:PaintMemento.Memento): Unit
            def repaint(): Unit } =>
 
-  var shapes: List[Shape] = List(
-    new Circle(80, 80, 40),
-    new painting.shapes.Rectangle(300, 20, 100, 80),
-    new Square(120, 180, 120)
-  )
+  var shapes: List[Shape] = Nil
 
   def restoreMemento(m: PaintMemento.Memento) {
     m match {
