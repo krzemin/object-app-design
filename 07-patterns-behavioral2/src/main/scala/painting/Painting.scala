@@ -4,46 +4,51 @@ import swing._
 import event._
 import painting.shapes._
 
-object Painting extends SimpleSwingApplication {
+object Painting extends SimpleSwingApplication with PaintMemento.Originator {
+
+  val circle = new Button { text = "Kółko" }
+  val square = new Button { text = "Kwadrat" }
+  val rectangle = new Button { text = "Prostokąt" }
+  val move = new Button { text = "Przesuń" }
+  val remove = new Button { text = "Usuń" }
+  val undo = new Button { text = "Cofnij" }
+  val redo = new Button { text = "Ponów" }
+
+  val toolbar = new BoxPanel(Orientation.Horizontal) {
+    contents ++= Seq(circle, square, rectangle, move, remove, undo, redo)
+  }
+
+  object State extends Enumeration {
+    type State = Value
+    val Circle, Square, Rectangle, Move, Remove = Value
+  }
+
+  var state = State.Circle
+  var mousePressed = false
+  var mouseXY = new Point()
+
+  var shapes: List[Shape] = List(
+    new Circle(80, 80, 40),
+    new painting.shapes.Rectangle(300, 20, 100, 80),
+    new Square(120, 180, 120)
+  )
+
+  val panel = new Panel() {
+    preferredSize = new Dimension(1200, 800)
+    override def paintComponent(g: java.awt.Graphics2D) {
+      g.clearRect(0, 0, size.width, size.height)
+      (0 until 1200 by 40).foreach { x => g.drawLine(x, 0, x, 800) }
+      (0 until 800 by 40).foreach { y => g.drawLine(0, y, 1200, y) }
+      shapes.foreach(_.draw(g))
+    }
+  }
+
+  def restoreMemento(m: PaintMemento.Memento): Unit = ???
+  def applyMemento(m: PaintMemento.Memento): Unit = ???
+
+
   def top = new MainFrame {
     title = "Painting app"
-
-    val circle = new Button { text = "Kółko" }
-    val square = new Button { text = "Kwadrat" }
-    val rectangle = new Button { text = "Prostokąt" }
-    val move = new Button { text = "Przesuń" }
-    val remove = new Button { text = "Usuń" }
-    val undo = new Button { text = "Cofnij" }
-    val redo = new Button { text = "Ponów" }
-
-    val toolbar = new BoxPanel(Orientation.Horizontal) {
-      contents ++= Seq(circle, square, rectangle, move, remove, undo, redo)
-    }
-
-    object State extends Enumeration {
-      type State = Value
-      val Circle, Square, Rectangle, Move, Remove = Value
-    }
-
-    var state = State.Circle
-    var mousePressed = false
-    var mouseXY = new Point()
-
-    var shapes: List[Shape] = List(
-      new Circle(80, 80, 40),
-      new painting.shapes.Rectangle(300, 20, 100, 80),
-      new Square(120, 180, 120)
-    )
-
-    val panel = new Panel() {
-      preferredSize = new Dimension(1200, 800)
-      override def paintComponent(g: java.awt.Graphics2D) {
-        g.clearRect(0, 0, size.width, size.height)
-        (0 until 1200 by 40).foreach { x => g.drawLine(x, 0, x, 800) }
-        (0 until 800 by 40).foreach { y => g.drawLine(0, y, 1200, y) }
-        shapes.foreach(_.draw(g))
-      }
-    }
 
     contents = new BoxPanel(Orientation.Vertical) {
       contents += toolbar
