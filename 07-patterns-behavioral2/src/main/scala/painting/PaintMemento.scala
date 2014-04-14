@@ -7,15 +7,12 @@ object PaintMemento {
   trait Originator {
     def restoreMemento(m: Memento): Unit
     def applyMemento(m: Memento): Unit
-    def newState(m: Memento) {
-
-    }
   }
 
   trait Memento
-  class AddShape(val shape: Shape) extends Memento
-  class RemoveShape(val idx: Int, val shape: Shape) extends Memento
-  class MoveShape(val idx: Int, val lastX: Int, val lastY: Int) extends Memento
+  case class AddShape(shape: Shape) extends Memento
+  case class RemoveShape(idx: Int, shape: Shape) extends Memento
+  case class MoveShape(idx: Int, fromX: Int, fromY: Int, toX: Int, toY: Int) extends Memento
 
   class Caretaker(val originator: Originator) {
 

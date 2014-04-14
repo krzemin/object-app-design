@@ -40,11 +40,44 @@ object Painting extends SimpleSwingApplication with PaintMemento.Originator {
       (0 until 1200 by 40).foreach { x => g.drawLine(x, 0, x, 800) }
       (0 until 800 by 40).foreach { y => g.drawLine(0, y, 1200, y) }
       shapes.foreach(_.draw(g))
+      shapes.foreach(println(_))
     }
   }
 
-  def restoreMemento(m: PaintMemento.Memento): Unit = ???
-  def applyMemento(m: PaintMemento.Memento): Unit = ???
+  val caretaker = new PaintMemento.Caretaker(this)
+
+  def restoreMemento(m: PaintMemento.Memento) = {
+    m match {
+      case PaintMemento.AddShape(shape) =>
+        shapes ::= shape
+      case PaintMemento.RemoveShape(idx, shape) =>
+        shapes.splitAt(idx) match {
+          case (left, right) => shapes = left ++ (shape :: right)
+        }
+      case PaintMemento.MoveShape(idx, lastX, lastY, _, _) =>
+        val shape = shapes(idx).move(lastX, lastY)
+        shapes = shapes.updated(idx, shape)
+    }
+    panel.repaint()
+  }
+
+  def applyMemento(m: PaintMemento.Memento) = {
+    m match {
+      case PaintMemento.AddShape(shape) =>
+        shapes ::= shape
+      case PaintMemento.RemoveShape(idx, shape) =>
+        shapes = shapes.patch(idx, Nil, 1)
+      case PaintMemento.MoveShape(idx, _, _, toX, toY) =>
+        val shape = shapes(idx).move(toX, toY)
+        shapes = shapes.updated(idx, shape)
+    }
+    panel.repaint()
+  }
+
+  def newState(m: PaintMemento.Memento) {
+    caretaker.newState(m)
+    applyMemento(m)
+  }
 
 
   def top = new MainFrame {
@@ -65,20 +98,19 @@ object Painting extends SimpleSwingApplication with PaintMemento.Originator {
       case ButtonClicked(button) if button == rectangle => state = State.Rectangle
       case ButtonClicked(button) if button == move => state = State.Move
       case ButtonClicked(button) if button == remove => state = State.Remove
-      case ButtonClicked(button) if button == undo =>
-        println("undo clicked")
-      case ButtonClicked(button) if button == redo =>
-        println("redo clicked")
+      case ButtonClicked(button) if button == undo => caretaker.undo()
+      case ButtonClicked(button) if button == redo => caretaker.redo()
       case MousePressed(_, point, _, _, _) =>
         mouseXY = point
         mousePressed = true
         state match {
           case State.Remove =>
-            println("removing ")
-            shapes.find(_.isPointInside(point.x, point.y)).foreach { shape =>
-              shapes = shapes.filterNot(_ == shape)
+            shapes.zipWithIndex.find {
+              case (shape, idx) => shape.isPointInside(point.x, point.y)
+            }.foreach {
+              case (shape, idx) =>
+                newState(new PaintMemento.RemoveShape(idx, shape))
             }
-            panel.repaint()
           case x => println("pressed at state " + state)
         }
       case MouseReleased(_, point, _, _, _) =>
