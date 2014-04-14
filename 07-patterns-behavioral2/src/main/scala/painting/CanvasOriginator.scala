@@ -16,7 +16,7 @@ trait CanvasOriginator extends PaintMemento.Originator {
   def restoreMemento(m: PaintMemento.Memento) {
     m match {
       case PaintMemento.AddShape(shape) =>
-        shapes ::= shape
+        shapes = shapes.filterNot(_ == shape)
       case PaintMemento.RemoveShape(idx, shape) =>
         shapes.splitAt(idx) match {
           case (left, right) => shapes = left ++ (shape :: right)
@@ -42,6 +42,12 @@ trait CanvasOriginator extends PaintMemento.Originator {
   }
 
   object Events {
+
+    def circle(point: java.awt.Point) {
+      val shape: Circle = new Circle(point.x, point.y, 50)
+      newState(new PaintMemento.AddShape(shape))
+    }
+
     def remove(point: java.awt.Point) {
       shapes.zipWithIndex.find {
         case (shape, idx) => shape.isPointInside(point.x, point.y)
@@ -51,8 +57,5 @@ trait CanvasOriginator extends PaintMemento.Originator {
       }
     }
   }
-
-
-
 
 }

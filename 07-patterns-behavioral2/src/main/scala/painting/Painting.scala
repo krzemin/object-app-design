@@ -71,6 +71,7 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
         mouseXY = point
         mousePressed = true
         state match {
+          case State.Circle => Events.circle(point)
           case State.Remove => Events.remove(point)
           case x => println("pressed at state " + state)
         }
