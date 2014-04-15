@@ -2,6 +2,7 @@ package painting
 
 import swing._
 import event._
+import java.awt.Color
 
 object Painting extends SimpleSwingApplication with CanvasOriginator {
 
@@ -32,8 +33,10 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
     preferredSize = new Dimension(1200, 800)
     override def paintComponent(g: java.awt.Graphics2D) {
       g.clearRect(0, 0, size.width, size.height)
+      g.setColor(Color.GRAY)
       (0 until 1200 by 40).foreach { x => g.drawLine(x, 0, x, 800) }
       (0 until 800 by 40).foreach { y => g.drawLine(0, y, 1200, y) }
+      g.setColor(Color.BLUE)
       shapes.foreach(_.draw(g))
     }
   }
@@ -70,28 +73,25 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
       case ButtonClicked(button) if button == undo => caretaker.undo()
       case ButtonClicked(button) if button == redo => caretaker.redo()
       case MousePressed(_, point, _, _, _) =>
-        mouseXY = point
-        pressXY = point
-        mousePressed = true
+        mouseXY = point; pressXY = point;  mousePressed = true
         state match {
           case State.Move => Events.startMoving(point).foreach(movingIdx = _)
           case State.Remove => Events.remove(point)
-          case x => println("pressed at state " + state)
+          case _ => // do nothing
         }
       case MouseReleased(_, point, _, _, _) =>
-        mouseXY = point
-        mousePressed = false
-
+        mouseXY = point; mousePressed = false
         state match {
           case State.Circle => Events.circle(pressXY, point)
           case State.Square => Events.square(pressXY, point)
           case State.Rectangle => Events.rectangle(pressXY, point)
           case State.Move =>
-            Events.finishMoving(movingIdx, pressXY, point)
-            movingIdx = -1
-          case x => println("mouse released = " + point)
+            if(movingIdx != -1) {
+              Events.finishMoving(movingIdx, pressXY, point)
+              movingIdx = -1
+            }
+          case _ => // do nothing
         }
-
       case MouseMoved(_, point, _) =>
         mouseXY = point
         if(mousePressed && movingIdx != -1) {
