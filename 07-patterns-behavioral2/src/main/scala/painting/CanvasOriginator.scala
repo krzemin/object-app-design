@@ -58,6 +58,24 @@ trait CanvasOriginator extends PaintMemento.Originator {
       newState(new PaintMemento.AddShape(shape))
     }
 
+    def startMoving(point: java.awt.Point): Option[Int] = {
+      shapes.zipWithIndex.find {
+        case (shape, idx) => shape.isPointInside(point.x, point.y)
+      }.map(_._2)
+    }
+
+    def continueMoving(idx: Int, point: java.awt.Point) {
+      shapes = shapes.patch(idx, List(shapes(0).move(point.x, point.y)), 1)
+      repaint()
+    }
+
+    def finishMoving(idx: Int, pointFrom: java.awt.Point, pointTo: java.awt.Point) {
+      newState(new PaintMemento.MoveShape(idx,
+        pointFrom.x, pointFrom.y,
+        pointTo.x, pointTo.y)
+      )
+    }
+
     def remove(point: java.awt.Point) {
       shapes.zipWithIndex.find {
         case (shape, idx) => shape.isPointInside(point.x, point.y)

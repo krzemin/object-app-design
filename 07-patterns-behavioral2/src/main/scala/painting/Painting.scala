@@ -26,6 +26,7 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
   var mousePressed = false
   var pressXY = new Point()
   var mouseXY = new Point()
+  var movingIdx = -1
 
   val panel = new Panel() {
     preferredSize = new Dimension(1200, 800)
@@ -73,6 +74,7 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
         pressXY = point
         mousePressed = true
         state match {
+          case State.Move => Events.startMoving(point).foreach(movingIdx = _)
           case State.Remove => Events.remove(point)
           case x => println("pressed at state " + state)
         }
@@ -84,12 +86,17 @@ object Painting extends SimpleSwingApplication with CanvasOriginator {
           case State.Circle => Events.circle(pressXY, point)
           case State.Square => Events.square(pressXY, point)
           case State.Rectangle => Events.rectangle(pressXY, point)
+          case State.Move =>
+            Events.finishMoving(movingIdx, pressXY, point)
+            movingIdx = -1
           case x => println("mouse released = " + point)
         }
 
       case MouseMoved(_, point, _) =>
         mouseXY = point
-        if(mousePressed) { panel.repaint() }
+        if(mousePressed && movingIdx != -1) {
+          Events.continueMoving(movingIdx, point)
+        }
     }
   }
 }
