@@ -36,7 +36,7 @@ class HttpCommand(val name: String) extends Command {
 
 object RandomFileReceiver {
   def fillRandomFile(name: String, size: Int) {
-    println(s"filling $name with random content of size $size")
+    println(s"filling $name with random content of size $size...")
     Thread.sleep(60)
     println(s"done filling $name")
   }
@@ -49,15 +49,40 @@ class RandomFileCommand(val size: Int) extends Command {
   }
 }
 
+object CopyFileReceiver {
+  def copyFile(src: String, target: String) {
+    println(s"copying $src to $target..")
+    Thread.sleep(650)
+    println(s"copying $src to $target done")
+  }
+}
+class CopyFileCommand extends Command {
+  def execute(args: List[String]) = args match {
+    case List(src, target) => Try(CopyFileReceiver.copyFile(src, target))
+    case _ => Failure(new Throwable("need two arguments - source and target file names"))
+  }
+}
+
 
 val ftpCmd = new FtpCommand("/tmp/localfile")
 val result1 = ftpCmd.execute(List("ftp://example.org/remotefile"))
 
+
+
 val httpCmd = new HttpCommand("/tmp/localfile2")
 val result2 = httpCmd.execute(List("http://example.org/remotefile2"))
 
+
+
 val rfCmd = new RandomFileCommand(2048)
 val result3 = rfCmd.execute(List("/tmp/localfile3"))
+
+
+
+val cpCmd = new CopyFileCommand
+val result4 = cpCmd.execute(List("/tmp/localfile3", "/tmp/localfile4"))
+
+
 
 
 
