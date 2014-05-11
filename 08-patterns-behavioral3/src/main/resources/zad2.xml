@@ -1,0 +1,19 @@
+<data>
+    <element type="list">
+        <item>1</item>
+        <item>2</item>
+        <item>1</item>
+    </element>
+    <element type="set">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </element>
+    <element type="variant">
+        <thisisthelongest>some value</thisisthelongest>
+        <a>2</a>
+        <lalala>hehehe</lalala>
+    </element>
+</data>
