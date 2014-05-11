@@ -30,6 +30,15 @@ object XmlDataAccessHandler extends DataAccessHandler[InputStream,String,String]
 
 val xmlResult = XmlDataAccessHandler.execute
 
+object DbDataAccessHandler extends DataAccessHandler[Unit,List[(String, Int)],Int] {
+  def connect = ()
+  def retrieve(handle: Unit): List[(String, Int)] =
+    List(("item1", 10), ("item2", 70), ("item3", 22), ("item4", 3))
+  def process(input: List[(String, Int)]): Int =
+    input.map(_._2).sum
+  def close(handle: Unit) {}
+}
 
+val dbResult = DbDataAccessHandler.execute
 
 
